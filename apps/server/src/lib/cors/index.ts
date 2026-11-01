@@ -1,4 +1,4 @@
-import cors, { CorsOptions } from "cors";
+import { CorsOptions } from "cors";
 
 export const corsConfig: CorsOptions = {
   origin: ["https://localhost:3000"],
