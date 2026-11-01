@@ -18,8 +18,12 @@ Sloth is an AI email triage agent. This repo is a Turborepo monorepo: `apps/web`
 ```
 my-turborepo/
 ├─ apps/
-│  └─ web/    # product app — Next.js, port 3000
+│  ├─ web/    # product app — Next.js, port 3000
+│  └─ server/ # @server — Express API, built with tsup
 ├─ packages/
+│  ├─ db/                 # @repo/db — Prisma 7 client + pg adapter
+│  ├─ env/                # @repo/env — env file resolution and schemas
+│  ├─ schemas/            # @repo/schemas — shared zod schemas
 │  ├─ ui/                 # @repo/ui — shared React components
 │  ├─ eslint-config/      # @repo/eslint-config
 │  └─ typescript-config/  # @repo/typescript-config
@@ -48,6 +52,8 @@ pnpm exec turbo run <task> --filter=web
 ```
 
 - Use `pnpm exec turbo` unless a global `turbo` is installed.
+- `apps/server` builds with tsup into `dist/`; `@repo/db`, `@repo/env`, and `@repo/schemas` are consumed as TypeScript source through their package `exports` maps (no build step).
+- Prisma lives in `packages/db`; run its scripts with `pnpm --filter @repo/db <script>` (config: `prisma7.config.ts`).
 - New tasks must be declared in `turbo.json` (with `dependsOn`, `inputs`, `outputs` as appropriate) before use.
 - Read the installed Turbo docs (block above) before changing `turbo.json` or CLI usage.
 
@@ -62,7 +68,7 @@ pnpm exec turbo run <task> --filter=web
 ## Path aliases (required, always start with `@`)
 
 - Never import across directories with relative paths (`../`, `../../`). Only `./sibling` inside the same folder is allowed.
-- Workspace packages: `@repo/ui`, `@repo/eslint-config`, `@repo/typescript-config`, and future `@repo/*` packages.
+- Workspace packages: `@repo/ui`, `@repo/eslint-config`, `@repo/typescript-config`, `@repo/db`, `@repo/env`, `@repo/schemas`.
 - Inside an app, `@/` maps to that app's root:
   - `@/components/email-list`
   - `@/hooks/use-triage-queue`
@@ -87,6 +93,7 @@ pnpm exec turbo run <task> --filter=web
 
 ## Git
 
+- **Never commit automatically.** Do not run `git add`, `git commit`, `git push`, or any other history-changing command unless the user explicitly asks in the current request. Finishing a task is never implicit permission to commit.
 - **"git commit all" / "commit all" means: split the staged changes into logical, grouped commits — never one dump commit.** Each commit must be one coherent unit (a feature, a fix, a config change, docs, a refactor), and each group is staged and committed separately.
 - Inspect `git status` and `git diff` before staging; stage only files belonging to that group.
 - Conventional Commits: `type(scope): summary` — types `feat|fix|chore|docs|refactor|test|build|ci|perf`; scopes `web|ui|config|repo`.
