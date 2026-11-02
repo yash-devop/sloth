@@ -5,13 +5,16 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    "./resolve-env-file": "./src/resolve-env-file.ts",
+    "./server-env": "./src/server-env.ts",
+    "./worker-env": "./src/worker-env.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "dotenv": "^18.0.9",
     "find-up": "^8.0.0",
     "zod": "^4.1.13"
   },
