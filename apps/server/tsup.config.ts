@@ -10,4 +10,5 @@ export default defineConfig({
   clean: true,
   dts: false,
   bundle: true,
+  noExternal: [/^@repo\//, "find-up"],
 });
