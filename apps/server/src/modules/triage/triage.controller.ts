@@ -1,11 +1,14 @@
+import { emailInputSchema } from "@repo/schemas";
 import { Request, Response } from "express";
 import { triageService } from "./triage.service";
 
 export const triageController = {
-  test: async (req: Request, res: Response) => {
+  testResponse: async (req: Request, res: Response) => {
     try {
-      const res = triageService.test();
-      return res;
+      const emailInput = emailInputSchema.parse(req.body);
+      const response = await triageService.testResponse(emailInput);
+
+      return res.status(200).json(response);
     } catch (error) {
       throw error;
     }

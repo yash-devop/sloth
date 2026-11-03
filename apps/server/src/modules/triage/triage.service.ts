@@ -1,22 +1,22 @@
-import { serverEnv } from "@repo/env/server-env";
-import { AppError } from "../../middlewares/error.middleware";
-import { GoogleGenAI } from "@google/genai";
+import {
+  emailClassificationResponseSchema,
+  EmailInputType,
+} from "@repo/schemas";
+import { llmService } from "../llm/llm.service";
+
 export const triageService = {
-  test: async () => {
+  testResponse: async (emailInput: EmailInputType) => {
     try {
-      const gemini = new GoogleGenAI({ apiKey: serverEnv.GEMINI_API_KEY });
-
-      const response = await gemini.models.generateContent({
-        model: "gemini-3.8-flash",
-        contents: "What is 1+2 ?",
-      });
-
-      console.log("response", response.text);
-
-      return response.text;
+      const res = await llmService.llmOutput(emailInput);
+      const parsedRes = emailClassificationResponseSchema.parse(
+        JSON.parse(res.data),
+      );
+      return {
+        data: parsedRes,
+        message: "Email Triage done.",
+      };
     } catch (error) {
-      if (error instanceof AppError) throw error;
-      throw new AppError("triage failed", 400, "FAILED");
+      throw error;
     }
   },
 };

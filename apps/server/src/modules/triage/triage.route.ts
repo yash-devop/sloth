@@ -3,4 +3,4 @@ import { triageController } from "./triage.controller";
 
 export const triageRouter = Router() as Router;
 
-triageRouter.get("/triage", triageController.test);
+triageRouter.post("/triage", triageController.testResponse);
