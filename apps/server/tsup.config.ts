@@ -11,4 +11,7 @@ export default defineConfig({
   dts: false,
   bundle: true,
   noExternal: [/^@repo\//, "find-up"],
+  banner: {
+    js: 'import { createRequire as __createRequire } from "node:module"; const require = __createRequire(import.meta.url);',
+  },
 });
