@@ -2,7 +2,7 @@ import z from "zod";
 
 export const emailInputSchema = z.object({
   sender: z.email("Invalid email"),
-  subject: z.string("Invalid subject").min(1).max(50),
+  subject: z.string("Invalid subject").min(1).max(100),
   body: z.string(),
   receivedAt: z.coerce.date("Invalid date"),
 });
