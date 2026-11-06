@@ -8,9 +8,15 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "compose:up": "docker compose --env-file .env.local up -d",
-    "compose:down": "docker compose down"
+    "compose:down": "docker compose down",
+    "prisma:generate": "cross-env NODE_ENV=development pnpm --filter @repo/db exec prisma generate --config=prisma7.config.ts",
+    "prisma:format": "cross-env NODE_ENV=development pnpm --filter @repo/db exec prisma format --config=prisma7.config.ts",
+    "prisma:prod": "cross-env NODE_ENV=production pnpm --filter @repo/db exec prisma migrate deploy --config=prisma7.config.ts",
+    "prisma:dev": "cross-env NODE_ENV=development pnpm --filter @repo/db exec prisma db push --config=prisma7.config.ts",
+    "prisma:reset": "cross-env NODE_ENV=development pnpm --filter @repo/db exec prisma migrate reset --config=prisma7.config.ts"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "prettier": "3.9.6",
     "turbo": "^2.11.10",
     "typescript": "7.0.2"
