@@ -1,0 +1,39 @@
+model Email {
+  id             String   @id @default(cuid())
+  gmailMessageId String?
+  sender         String
+  subject        String
+  body           String   @db.Text
+  receivedAt     DateTime
+  createdAt      DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emailAnalysis EmailAnalysis?
+
+  @@unique([userId, gmailMessageId])
+  @@index([userId, receivedAt])
+  @@map("email")
+}
+
+model EmailAnalysis {
+  id            String   @id @default(cuid())
+  category      String
+  priority      String
+  requiresReply Boolean
+  intent        String
+  summary       String   @db.Text
+  actionItems   String[]
+  deadlines     String[]
+  suggestedTone String
+  replyDraft    String?  @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  emailId String @unique
+  email   Email  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("email_analysis")
+}
