@@ -11,12 +11,7 @@
     "dev": "cross-env NODE_ENV=development tsup --watch --onSuccess \"node dist/index.js\"",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "build": "tsup",
-    "check-types": "tsc --noEmit",
-    "prisma:generate": "pnpm prisma generate",
-    "prisma:format": "pnpm prisma format",
-    "prisma:prod": "pnpm prisma migrate deploy",
-    "prisma:dev": "pnpm prisma db push",
-    "prisma:reset": "pnpm prisma migrate reset"
+    "check-types": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
