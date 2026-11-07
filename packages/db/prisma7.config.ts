@@ -1,9 +1,9 @@
-import { config } from "dotenv";
-import { defineConfig, env } from "prisma/config";
+import { serverEnv } from "@repo/env/server-env";
+import { defineConfig } from "prisma/config";
 
-import { resolveEnvFile } from "@repo/env/resolve-env-file";
+// import { resolveEnvFile } from "@repo/env/resolve-env-file";
 
-config({ path: await resolveEnvFile() });
+// config({ path: await resolveEnvFile() });
 
 export default defineConfig({
   schema: "prisma/",
@@ -13,6 +13,7 @@ export default defineConfig({
   },
 
   datasource: {
-    url: env("DATABASE_URL"),
+    // url: env("DATABASE_URL"),
+    url: serverEnv.DATABASE_URL,
   },
 });
