@@ -51,7 +51,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-  issuer                String
+  issuer                String?
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
