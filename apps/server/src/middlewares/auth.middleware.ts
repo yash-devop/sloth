@@ -26,12 +26,17 @@ export const authMiddleware = async (
       });
     }
 
+    console.log("Session ", session.user);
+
     req.user = session.user;
     req.session = session.session;
     next();
   } catch (err) {
-    const error = err as Error;
-    console.error("Auth Middleware Error:", error);
+    console.error("Auth Middleware Error:", err);
+    if (err instanceof AppError) {
+      throw err;
+    }
+
     return res.status(500).json({
       status: 500,
       message: "Unexpected error",

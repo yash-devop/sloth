@@ -1,11 +1,11 @@
-import express from "express";
-import { corsConfig } from "./lib/cors";
-import cors from "cors";
-import { versionRouter } from "./modules/version.route";
 import { serverEnv } from "@repo/env/server-env";
-import { errorMiddleware } from "./middlewares/error.middleware";
 import { toNodeHandler } from "better-auth/node";
+import cors from "cors";
+import express from "express";
 import { auth } from "./lib/better-auth";
+import { corsConfig } from "./lib/cors";
+import { errorMiddleware } from "./middlewares/error.middleware";
+import { versionRouter } from "./modules/version.route";
 
 const app = express();
 
