@@ -80,6 +80,7 @@ export const auth = betterAuth({
       enabled: true,
       trustedProviders: ["google"],
       requireLocalEmailVerified: true,
+      allowDifferentEmails: true,
     },
   },
   trustedOrigins: allowedOrigins,
