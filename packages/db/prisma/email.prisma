@@ -7,10 +7,11 @@ model Email {
   receivedAt     DateTime
   createdAt      DateTime @default(now())
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  emailAnalysis EmailAnalysis?
+  userId         String
+  gmailAccountId String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gmailAccount   GmailAccount   @relation(fields: [gmailAccountId], references: [id], onDelete: Cascade)
+  emailAnalysis  EmailAnalysis?
 
   @@unique([userId, gmailMessageId])
   @@index([userId, receivedAt])
