@@ -7,6 +7,52 @@ import { sendEmail } from "../mail";
 import { EMAIL_EXPIRES_IN } from "../mail/";
 import { verificationEmail, withFrontendCallback } from "../mail/template";
 
+type GmailSyncAccount = {
+  providerId: string;
+  userId: string;
+  accountId: string;
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  scope?: string | null;
+  accessTokenExpiresAt?: Date | null;
+  refreshTokenExpiresAt?: Date | null;
+};
+
+async function syncGmailAccount(account: GmailSyncAccount) {
+  if (account.providerId !== "google") return;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: account.userId },
+      select: { email: true },
+    });
+
+    if (!user) return;
+
+    const tokens = {
+      email: user.email,
+      accessToken: account.accessToken ?? null,
+      refreshToken: account.refreshToken ?? null,
+      scope: account.scope ?? null,
+      accessTokenExpiresAt: account.accessTokenExpiresAt ?? null,
+      refreshTokenExpiresAt: account.refreshTokenExpiresAt ?? null,
+    };
+
+    await prisma.gmailAccount.upsert({
+      where: { googleAccountId: account.accountId },
+      update: tokens,
+      create: {
+        userId: account.userId,
+        googleAccountId: account.accountId,
+        ...tokens,
+      },
+    });
+  } catch (error) {
+    // Never block the auth flow if mailbox provisioning fails.
+    console.error("Failed to sync Gmail account", error);
+  }
+}
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -18,16 +64,21 @@ export const auth = betterAuth({
     google: {
       clientId: serverEnv.GOOGLE_CLIENT_ID,
       clientSecret: serverEnv.GOOGLE_API_KEY,
-    },
-    github: {
-      clientId: serverEnv.GITHUB_CLIENT_ID,
-      clientSecret: serverEnv.GITHUB_API_KEY,
+      accessType: "offline", // it means that google please send refresh token also.
+      prompt: "consent",
+      scope: [
+        "openid",
+        "email",
+        "profile",
+        "https://www.googleapis.com/auth/gmail.readonly", // visit: https://developers.google.com/workspace/gmail/api/auth/scopes
+        "https://www.googleapis.com/auth/gmail.modify",
+      ],
     },
   },
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ["google", "github"],
+      trustedProviders: ["google"],
       requireLocalEmailVerified: true,
     },
   },
@@ -55,6 +106,20 @@ export const auth = betterAuth({
       sameSite: serverEnv.BETTER_AUTH_URL.startsWith("https://")
         ? "none"
         : "lax",
+    },
+  },
+  databaseHooks: {
+    account: {
+      create: {
+        after: async (account) => {
+          await syncGmailAccount(account);
+        },
+      },
+      update: {
+        after: async (account) => {
+          await syncGmailAccount(account);
+        },
+      },
     },
   },
 });

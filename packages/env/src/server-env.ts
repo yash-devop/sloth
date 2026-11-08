@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { config } from "dotenv";
+import { z } from "zod";
 import { resolveEnvFile } from "./resolve-env-file";
 
 config({ path: await resolveEnvFile() });
@@ -20,8 +20,8 @@ const serverEnvSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_API_KEY: z.string().min(1),
-  GITHUB_CLIENT_ID: z.string().min(1),
-  GITHUB_API_KEY: z.string().min(1),
+  // GITHUB_CLIENT_ID: z.string().min(1),
+  // GITHUB_API_KEY: z.stringx().min(1),
 });
 
 export const serverEnv = serverEnvSchema.parse(process.env);
