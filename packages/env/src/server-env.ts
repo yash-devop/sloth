@@ -20,6 +20,7 @@ const serverEnvSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_API_KEY: z.string().min(1),
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.5-flash-lite"),
   // GITHUB_CLIENT_ID: z.string().min(1),
   // GITHUB_API_KEY: z.stringx().min(1),
 });
