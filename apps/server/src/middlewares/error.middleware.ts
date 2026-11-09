@@ -10,6 +10,7 @@ export const ErrorCodes = [
   "INVALID",
   "REQUIRED",
   "FAILED",
+  "CONFLICT",
 ] as const;
 
 export type TErrorCode = (typeof ErrorCodes)[number];
@@ -17,13 +18,13 @@ export type TErrorCode = (typeof ErrorCodes)[number];
 export class AppError extends Error {
   status: number;
   code: TErrorCode;
-  meta?: any;
+  meta?: unknown;
 
   constructor(
     message: string,
     status = 500,
     code: TErrorCode = "INTERNAL_ERROR",
-    meta?: any,
+    meta?: unknown,
   ) {
     super(message);
     this.code = code;
@@ -32,64 +33,71 @@ export class AppError extends Error {
   }
 }
 
+const errorResponse = (
+  res: Response,
+  status: number,
+  code: string,
+  message: string,
+  details?: unknown,
+) =>
+  res.status(status).json({
+    status,
+    data: null,
+    message,
+    error: { code, message, details: details ?? null },
+  });
+
+const mapPrismaCode = (code: string): { status: number; code: TErrorCode } => {
+  switch (code) {
+    case "P2002":
+      return { status: 409, code: "ALREADY_PRESENT" };
+    case "P2025":
+      return { status: 404, code: "NOT_FOUND" };
+    default:
+      return { status: 409, code: "CONFLICT" };
+  }
+};
+
 export const errorMiddleware = (
   err: unknown,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
-  console.log("Global Error Catch => ", err);
   if (err instanceof ZodError) {
-    return res.status(400).json({
-      status: 400,
-      error: {
-        code: "VALIDATION_ERROR",
-        message: "Invalid request payload",
-      },
-      meta: JSON.parse(err.message),
-    });
+    return errorResponse(
+      res,
+      400,
+      "VALIDATION_ERROR",
+      "Invalid request payload",
+      err.issues,
+    );
   }
 
   if (err instanceof Prisma.Prisma.PrismaClientKnownRequestError) {
-    return res.status(409).json({
-      status: 409,
-      error: {
-        code: err.code,
-        message: "Database constraint error",
-        cause: err.meta?.cause as string | undefined,
-      },
-      meta: err.meta,
-    });
+    const mapped = mapPrismaCode(err.code);
+
+    return errorResponse(
+      res,
+      mapped.status,
+      mapped.code,
+      "Database constraint error",
+      err.meta,
+    );
   }
 
   if (err instanceof Prisma.Prisma.PrismaClientValidationError) {
-    return res.status(400).json({
-      status: 400,
-      error: {
-        code: "PRISMA_VALIDATION_ERROR",
-        message: err.message,
-      },
-      meta: null,
-    });
+    return errorResponse(
+      res,
+      400,
+      "VALIDATION_ERROR",
+      "Database validation error",
+    );
   }
 
   if (err instanceof AppError) {
-    return res.status(err.status).json({
-      status: err.status,
-      error: {
-        code: err.code,
-        message: err.message,
-      },
-      meta: err.meta,
-    });
+    return errorResponse(res, err.status, err.code, err.message, err.meta);
   }
 
-  return res.status(500).json({
-    status: 500,
-    error: {
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Something went wrong",
-    },
-    meta: null,
-  });
+  return errorResponse(res, 500, "INTERNAL_ERROR", "Something went wrong");
 };
