@@ -212,26 +212,19 @@ export const llmService = {
       const gemini = new GoogleGenAI({ apiKey: serverEnv.GEMINI_API_KEY });
       const prompt = llmService.generatePrompt(userInput);
       const response = await gemini.models.generateContent({
-        model: "gemini-3.5-flash-lite",
+        model: serverEnv.GEMINI_MODEL,
         contents: prompt,
       });
 
       if (!response.text) {
-        throw new AppError(
-          "No response from gemini api",
-          400,
-          "INTERNAL_ERROR",
-        );
+        throw new AppError("No response from gemini api", 502, "FAILED");
       }
-      console.log("response", response.text);
-
-      return {
-        data: response.text,
-        message: "LLM generated response successfully.",
-      };
+      return response.text;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError("triage failed", 400, "FAILED");
+      throw new AppError("Email Triage Failed", 502, "FAILED", {
+        cause: error,
+      });
     }
   },
 };
