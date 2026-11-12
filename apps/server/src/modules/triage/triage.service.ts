@@ -6,6 +6,19 @@ import {
 import { AppError } from "../../middlewares/error.middleware";
 import { llmService } from "../llm/llm.service";
 
+export const triageService = {
+  classify: async (
+    emailInput: EmailInputType,
+  ): Promise<EmailClassificationResponseType> => {
+    const raw = await llmService.llmOutput(emailInput);
+    const parsed = parseModelJson(raw);
+
+    return emailClassificationResponseSchema.parse(
+      normalize(isRecord(parsed) ? parsed : {}),
+    );
+  },
+};
+
 const toUpperEnum = (value: unknown): string | undefined =>
   typeof value === "string" ? value.trim().toUpperCase() : undefined;
 
@@ -32,17 +45,4 @@ const parseModelJson = (raw: string): unknown => {
   } catch {
     throw new AppError("Model returned invalid JSON", 502, "FAILED");
   }
-};
-
-export const triageService = {
-  classify: async (
-    emailInput: EmailInputType,
-  ): Promise<EmailClassificationResponseType> => {
-    const raw = await llmService.llmOutput(emailInput);
-    const parsed = parseModelJson(raw);
-
-    return emailClassificationResponseSchema.parse(
-      normalize(isRecord(parsed) ? parsed : {}),
-    );
-  },
 };

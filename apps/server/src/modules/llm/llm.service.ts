@@ -7,7 +7,7 @@ import {
 } from "@repo/schemas";
 import { AppError } from "../../middlewares/error.middleware";
 export const llmService = {
-  generatePrompt: (userInput: EmailInputType) => {
+  generatePrompt: (userInput: EmailInputType): string => {
     const TRIAGE_SYSTEM_PROMPT = `
               You are an intelligent email triage assistant.
 
@@ -207,7 +207,7 @@ export const llmService = {
 
     return TRIAGE_SYSTEM_PROMPT;
   },
-  llmOutput: async (userInput: EmailInputType) => {
+  llmOutput: async (userInput: EmailInputType): Promise<string> => {
     try {
       const gemini = new GoogleGenAI({ apiKey: serverEnv.GEMINI_API_KEY });
       const prompt = llmService.generatePrompt(userInput);
