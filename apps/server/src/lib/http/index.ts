@@ -1,8 +1,43 @@
 import { Response } from "express";
+import { TApiEnvelope, TApiResponse, TErrorCode } from "../../types/http.type";
 
-export const ok = <T>(res: Response, data: T, message: string = "Ok") => {
-  return res.status(200).json({ status: 200, data, message, error: null });
-};
-export const created = <T>(res: Response, data: T, message: string = "Created") => {
-  return res.status(201).json({ status: 201, data, message, error: null });
-};
+const send = <T>(
+  res: TApiResponse<T>,
+  status: number,
+  data: T,
+  message: string,
+): TApiResponse<T> =>
+  res.status(status).json({
+    status,
+    data,
+    message,
+    error: null,
+    success: true,
+  });
+
+export const okResponse = <T>(
+  res: TApiResponse<T>,
+  data: T,
+  message: string = "Ok",
+): TApiResponse<T> => send(res, 200, data, message);
+
+export const createdResponse = <T>(
+  res: Response<TApiEnvelope<T>>,
+  data: T,
+  message: string = "Created",
+): TApiResponse<T> => send(res, 201, data, message);
+
+export const errorResponse = (
+  res: Response<TApiEnvelope<null>>,
+  status: number,
+  code: TErrorCode,
+  message: string,
+  details?: unknown,
+): TApiResponse<null> =>
+  res.status(status).json({
+    status,
+    data: null,
+    message,
+    error: { code, message, details: details ?? null },
+    success: false,
+  });

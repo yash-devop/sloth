@@ -1,19 +1,8 @@
 import { Prisma } from "@repo/db";
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
-
-export const ErrorCodes = [
-  "INTERNAL_ERROR",
-  "VALIDATION_ERROR",
-  "NOT_FOUND",
-  "ALREADY_PRESENT",
-  "INVALID",
-  "REQUIRED",
-  "FAILED",
-  "CONFLICT",
-] as const;
-
-export type TErrorCode = (typeof ErrorCodes)[number];
+import { errorResponse } from "../lib/http";
+import { TErrorCode } from "../types/http.type";
 
 export class AppError extends Error {
   status: number;
@@ -32,20 +21,6 @@ export class AppError extends Error {
     this.meta = meta;
   }
 }
-
-const errorResponse = (
-  res: Response,
-  status: number,
-  code: string,
-  message: string,
-  details?: unknown,
-) =>
-  res.status(status).json({
-    status,
-    data: null,
-    message,
-    error: { code, message, details: details ?? null },
-  });
 
 const mapPrismaCode = (code: string): { status: number; code: TErrorCode } => {
   switch (code) {
