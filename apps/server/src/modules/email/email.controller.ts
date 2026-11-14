@@ -3,6 +3,8 @@ import {
   emailListQuerySchema,
   EmailAnalyzeType,
   EmailSyncType,
+  EmailIdType,
+  EmailListQueryType,
 } from "@repo/schemas";
 import { Request, Response } from "express";
 import { okResponse } from "../../lib/http";
@@ -10,15 +12,17 @@ import { emailAnalysisService } from "./email-analysis.service";
 import { emailService } from "./email.service";
 
 export const emailController = {
-  getEmails: async (req: Request, res: Response): Promise<void> => {
-    const query = emailListQuerySchema.parse(req.query);
-    const data = await emailService.list(req.user.id, query);
+  getEmails: async (
+    req: Request<unknown, unknown, unknown, EmailListQueryType>,
+    res: Response,
+  ): Promise<void> => {
+    const data = await emailService.list(req.user.id, req.query);
 
     okResponse(res, data, "Emails fetched successfully");
   },
 
   getEmail: async (
-    req: Request<{ id: string }>,
+    req: Request<EmailIdType, unknown, unknown>,
     res: Response,
   ): Promise<void> => {
     const data = await emailService.getEmail(req.user.id, req.params.id);
