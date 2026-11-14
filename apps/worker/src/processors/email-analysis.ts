@@ -1,7 +1,7 @@
 import { classifyEmail } from "@repo/ai";
 import { prisma } from "@repo/db";
 import { workerEnv } from "@repo/env/worker-env";
-import { type EmailAnalysisJobType } from "../lib/queue";
+import { type EmailAnalysisJobType } from "../lib/queue.type";
 import { type Job } from "bullmq";
 
 const BODY_LIMIT = 20_000;

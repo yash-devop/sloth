@@ -1,11 +1,5 @@
 export const EMAIL_ANALYSIS_QUEUE = "email-analysis";
 
-export type EmailAnalysisJobType = {
-  emailId: string;
-  userId: string;
-  gmailAccountId: string;
-};
-
 export const EMAIL_ANALYSIS_JOB_OPTIONS = {
   attempts: 3,
   backoff: {

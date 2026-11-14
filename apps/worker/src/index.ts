@@ -1,7 +1,8 @@
 import { AiError } from "@repo/ai";
 import { prisma } from "@repo/db";
 import { workerEnv } from "@repo/env/worker-env";
-import { EMAIL_ANALYSIS_QUEUE, type EmailAnalysisJobType } from "./lib/queue";
+import { EMAIL_ANALYSIS_QUEUE } from "./lib/queue";
+import { type EmailAnalysisJobType } from "./lib/queue.type";
 import { type Job, Worker } from "bullmq";
 import { redisClient } from "./lib/redis";
 import { processEmailAnalysis } from "./processors/email-analysis";
