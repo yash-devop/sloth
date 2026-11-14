@@ -3,18 +3,7 @@ import { AppError } from "../../middlewares/error.middleware";
 import { isInvalidGrant, markAccountDisconnected } from "./errors";
 import { gmailConnect } from "./gmail-connect";
 import { parseGmailMessage } from "./parse-gmail-message";
-
-type SyncGmailOptions = {
-  gmailAccountId?: string;
-  query?: string;
-  maxResults?: number;
-};
-
-export type SyncGmailResult = {
-  fetched: number;
-  saved: number;
-  failed: number;
-};
+import type { SyncGmailOptions, SyncGmailResult } from "./sync.type";
 
 const MAX_RESULTS = 100;
 

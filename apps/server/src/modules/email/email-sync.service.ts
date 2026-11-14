@@ -1,8 +1,6 @@
 import { EmailSyncType } from "@repo/schemas";
-import {
-  syncGmailMessages,
-  SyncGmailResult,
-} from "../../lib/google-gmail/sync";
+import { syncGmailMessages } from "../../lib/google-gmail/sync";
+import type { SyncGmailResult } from "../../lib/google-gmail/sync.type";
 import { emailAnalysisService } from "./email-analysis.service";
 
 const INITIAL_QUERY = "in:inbox newer_than:90d";

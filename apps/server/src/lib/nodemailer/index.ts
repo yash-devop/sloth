@@ -1,12 +1,6 @@
 import { serverEnv } from "@repo/env/server-env";
 import nodemailer from "nodemailer";
-
-type MailType = {
-  to: string;
-  subject: string;
-  text: string;
-  html?: string;
-};
+import type { MailType } from "./index.type";
 
 const GMAIL_SMTP = {
   host: "smtp.gmail.com",

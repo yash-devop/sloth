@@ -1,9 +1,5 @@
-import { Prisma, prisma } from "@repo/db";
-
-type AccountType = Pick<
-  Prisma.GmailAccount,
-  "id" | "email" | "status" | "createdAt" | "lastEmailSyncAt"
->;
+import { prisma } from "@repo/db";
+import type { AccountType } from "./accounts.service.type";
 
 export const accountsService = {
   list: async (userId: string): Promise<AccountType[]> =>

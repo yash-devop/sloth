@@ -1,12 +1,8 @@
-import { Prisma, prisma } from "@repo/db";
+import { prisma } from "@repo/db";
 import { serverEnv } from "@repo/env/server-env";
-import { gmail_v1, google } from "googleapis";
+import { google } from "googleapis";
 import { AppError } from "../../middlewares/error.middleware";
-
-type GmailConnection = {
-  gmailClient: gmail_v1.Gmail;
-  account: Prisma.GmailAccount;
-};
+import type { GmailConnection } from "./gmail-connect.type";
 
 export const gmailConnect = async (
   userId: string,

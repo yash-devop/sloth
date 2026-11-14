@@ -10,17 +10,7 @@ import {
   verificationEmail,
   withFrontendCallback,
 } from "../nodemailer/template";
-
-type GmailSyncAccount = {
-  providerId: string;
-  userId: string;
-  accountId: string;
-  accessToken?: string | null;
-  refreshToken?: string | null;
-  scope?: string | null;
-  accessTokenExpiresAt?: Date | null;
-  refreshTokenExpiresAt?: Date | null;
-};
+import type { GmailSyncAccount } from "./index.type";
 
 async function syncGmailAccount(account: GmailSyncAccount) {
   if (account.providerId !== "google") return;

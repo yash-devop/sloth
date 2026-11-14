@@ -1,13 +1,8 @@
 import { serverEnv } from "@repo/env/server-env";
 import { Queue } from "bullmq";
+import type { EmailAnalysisJobType } from "./analysis.queue.type";
 
 export const EMAIL_ANALYSIS_QUEUE = "email-analysis";
-
-export type EmailAnalysisJobType = {
-  emailId: string;
-  userId: string;
-  gmailAccountId: string;
-};
 
 const EMAIL_ANALYSIS_JOB_OPTIONS = {
   attempts: 3,
