@@ -6,17 +6,7 @@ import {
   type EmailClassificationResponseType,
   type EmailInputType,
 } from "@repo/schemas";
-
-export type TriageConfig = {
-  apiKey: string;
-  model: string;
-};
-
-export type TriageErrorCode =
-  | "REQUEST_FAILED"
-  | "EMPTY_RESPONSE"
-  | "INVALID_JSON"
-  | "INVALID_RESPONSE";
+import type { TriageConfig, TriageErrorCode } from "./triage.type";
 
 export class AiError extends Error {
   readonly code: TriageErrorCode;
