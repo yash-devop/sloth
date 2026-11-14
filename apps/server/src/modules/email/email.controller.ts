@@ -10,13 +10,19 @@ export const emailController = {
 
     okResponse(res, data, "Emails fetched successfully");
   },
+  getEmail: async (
+    req: Request<{ id: string }>,
+    res: Response,
+  ): Promise<void> => {
+    const data = await emailService.getEmail(req.user.id, req.params.id);
 
+    okResponse(res, data, "Email fetched successfully");
+  },
   syncEmails: async (
     req: Request<unknown, unknown, EmailSyncType>,
     res: Response,
   ): Promise<void> => {
     const data = await emailService.sync(req.user.id, req.body);
-
     okResponse(res, data, "Emails synced successfully");
   },
 };
