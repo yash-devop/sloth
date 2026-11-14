@@ -26,8 +26,6 @@ export const authMiddleware = async (
       });
     }
 
-    console.log("Session ", session.user);
-
     req.user = session.user;
     req.session = session.session;
     next();
