@@ -1,48 +1,26 @@
+import { AiError, classifyEmail } from "@repo/ai";
+import { serverEnv } from "@repo/env/server-env";
 import {
-  emailClassificationResponseSchema,
   EmailClassificationResponseType,
   EmailInputType,
 } from "@repo/schemas";
 import { AppError } from "../../middlewares/error.middleware";
-import { llmService } from "../llm/llm.service";
 
 export const triageService = {
   classify: async (
     emailInput: EmailInputType,
   ): Promise<EmailClassificationResponseType> => {
-    const raw = await llmService.llmOutput(emailInput);
-    const parsed = parseModelJson(raw);
+    try {
+      return await classifyEmail(emailInput, {
+        apiKey: serverEnv.GEMINI_API_KEY,
+        model: serverEnv.GEMINI_MODEL,
+      });
+    } catch (error) {
+      if (error instanceof AiError) {
+        throw new AppError(error.message, 502, "FAILED", { cause: error });
+      }
 
-    return emailClassificationResponseSchema.parse(
-      normalize(isRecord(parsed) ? parsed : {}),
-    );
+      throw error;
+    }
   },
-};
-
-const toUpperEnum = (value: unknown): string | undefined =>
-  typeof value === "string" ? value.trim().toUpperCase() : undefined;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
-const normalize = (raw: Record<string, unknown>) => ({
-  ...raw,
-  category: toUpperEnum(raw.category),
-  priority: toUpperEnum(raw.priority),
-  suggestedTone: toUpperEnum(raw.suggestedTone) ?? "NONE",
-  actionItems: Array.isArray(raw.actionItems) ? raw.actionItems : [],
-  deadlines: Array.isArray(raw.deadlines) ? raw.deadlines : [],
-});
-
-const parseModelJson = (raw: string): unknown => {
-  const cleaned = raw
-    .replace(/^\s*```(?:json)?/i, "")
-    .replace(/```\s*$/i, "")
-    .trim();
-
-  try {
-    return JSON.parse(cleaned);
-  } catch {
-    throw new AppError("Model returned invalid JSON", 502, "FAILED");
-  }
 };

@@ -1,14 +1,46 @@
 import { GoogleGenAI } from "@google/genai";
-import { serverEnv } from "@repo/env/server-env";
 import {
   EMAIL_CATEGORIES,
   EMAIL_PRIORITIES,
-  EmailInputType,
+  emailClassificationResponseSchema,
+  type EmailClassificationResponseType,
+  type EmailInputType,
 } from "@repo/schemas";
-import { AppError } from "../../middlewares/error.middleware";
-export const llmService = {
-  generatePrompt: (userInput: EmailInputType): string => {
-    const TRIAGE_SYSTEM_PROMPT = `
+
+export type TriageConfig = {
+  apiKey: string;
+  model: string;
+};
+
+export type TriageErrorCode =
+  | "REQUEST_FAILED"
+  | "EMPTY_RESPONSE"
+  | "INVALID_JSON"
+  | "INVALID_RESPONSE";
+
+export class AiError extends Error {
+  readonly code: TriageErrorCode;
+
+  constructor(message: string, code: TriageErrorCode, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "AiError";
+    this.code = code;
+  }
+}
+
+let client: GoogleGenAI | undefined;
+let clientApiKey: string | undefined;
+
+const getClient = (apiKey: string): GoogleGenAI => {
+  if (!client || clientApiKey !== apiKey) {
+    client = new GoogleGenAI({ apiKey });
+    clientApiKey = apiKey;
+  }
+
+  return client;
+};
+
+export const generatePrompt = (userInput: EmailInputType): string => `
               You are an intelligent email triage assistant.
 
               Your job is to analyze incoming emails, understand their intent, identify important information, and determine what actions the recipient may need to take.
@@ -205,26 +237,71 @@ export const llmService = {
 
     `;
 
-    return TRIAGE_SYSTEM_PROMPT;
-  },
-  llmOutput: async (userInput: EmailInputType): Promise<string> => {
-    try {
-      const gemini = new GoogleGenAI({ apiKey: serverEnv.GEMINI_API_KEY });
-      const prompt = llmService.generatePrompt(userInput);
-      const response = await gemini.models.generateContent({
-        model: serverEnv.GEMINI_MODEL,
-        contents: prompt,
-      });
+export const classifyEmail = async (
+  userInput: EmailInputType,
+  config: TriageConfig,
+): Promise<EmailClassificationResponseType> => {
+  const prompt = generatePrompt(userInput);
 
-      if (!response.text) {
-        throw new AppError("No response from gemini api", 502, "FAILED");
-      }
-      return response.text;
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      throw new AppError("Email Triage Failed", 502, "FAILED", {
-        cause: error,
-      });
-    }
-  },
+  let raw: string | undefined;
+  try {
+    const response = await getClient(config.apiKey).models.generateContent({
+      model: config.model,
+      contents: prompt,
+    });
+    raw = response.text;
+  } catch (error) {
+    throw new AiError("Email triage request failed", "REQUEST_FAILED", {
+      cause: error,
+    });
+  }
+
+  if (!raw) {
+    throw new AiError("No response from Gemini API", "EMPTY_RESPONSE");
+  }
+
+  const parsed = parseModelJson(raw);
+  const result = emailClassificationResponseSchema.safeParse(
+    normalize(isRecord(parsed) ? parsed : {}),
+  );
+
+  if (!result.success) {
+    throw new AiError(
+      "Model returned an invalid triage response",
+      "INVALID_RESPONSE",
+      { cause: result.error },
+    );
+  }
+
+  return result.data;
+};
+
+const toUpperEnum = (value: unknown): string | undefined =>
+  typeof value === "string" ? value.trim().toUpperCase() : undefined;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const normalize = (raw: Record<string, unknown>) => ({
+  ...raw,
+  category: toUpperEnum(raw.category),
+  priority: toUpperEnum(raw.priority),
+  suggestedTone: toUpperEnum(raw.suggestedTone) ?? "NONE",
+  actionItems: Array.isArray(raw.actionItems) ? raw.actionItems : [],
+  deadlines: Array.isArray(raw.deadlines) ? raw.deadlines : [],
+});
+
+const parseModelJson = (raw: string): unknown => {
+  const cleaned = raw
+    .replace(/^\s*```(?:json)?/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (error) {
+    throw new AiError("Model returned invalid JSON", "INVALID_JSON", {
+      cause: error,
+    });
+  }
 };
