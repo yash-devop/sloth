@@ -3,6 +3,7 @@ import { serverEnv } from "@repo/env/server-env";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { allowedOrigins } from "../cors";
+import { startInitialSync } from "../google-gmail/sync";
 import { sendEmail } from "../nodemailer";
 import { EMAIL_EXPIRES_IN } from "../nodemailer";
 import {
@@ -45,7 +46,7 @@ async function syncGmailAccount(account: GmailSyncAccount) {
         : {}),
     };
 
-    await prisma.gmailAccount.upsert({
+    const gmailAccount = await prisma.gmailAccount.upsert({
       where: { googleAccountId: account.accountId },
       update: {
         ...tokens,
@@ -63,6 +64,10 @@ async function syncGmailAccount(account: GmailSyncAccount) {
         ...tokens,
       },
     });
+
+    if (!gmailAccount.lastEmailSyncAt) {
+      startInitialSync(account.userId, gmailAccount.id);
+    }
   } catch (error) {
     // Never block the auth flow if mailbox provisioning fails.
     console.error("Failed to sync Gmail account", error);
