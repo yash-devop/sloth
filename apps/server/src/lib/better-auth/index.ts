@@ -34,19 +34,32 @@ async function syncGmailAccount(account: GmailSyncAccount) {
 
     const tokens = {
       email: user.email,
-      accessToken: account.accessToken ?? null,
-      refreshToken: account.refreshToken ?? null,
       scope: account.scope ?? null,
-      accessTokenExpiresAt: account.accessTokenExpiresAt ?? null,
-      refreshTokenExpiresAt: account.refreshTokenExpiresAt ?? null,
+      ...(account.accessToken ? { accessToken: account.accessToken } : {}),
+      ...(account.refreshToken ? { refreshToken: account.refreshToken } : {}),
+      ...(account.accessTokenExpiresAt
+        ? { accessTokenExpiresAt: account.accessTokenExpiresAt }
+        : {}),
+      ...(account.refreshTokenExpiresAt
+        ? { refreshTokenExpiresAt: account.refreshTokenExpiresAt }
+        : {}),
     };
 
     await prisma.gmailAccount.upsert({
       where: { googleAccountId: account.accountId },
-      update: tokens,
+      update: {
+        ...tokens,
+        status: "CONNECTED",
+        disconnectedAt: null,
+        lastError: null,
+      },
       create: {
         userId: account.userId,
         googleAccountId: account.accountId,
+        accessToken: account.accessToken ?? null,
+        refreshToken: account.refreshToken ?? null,
+        accessTokenExpiresAt: account.accessTokenExpiresAt ?? null,
+        refreshTokenExpiresAt: account.refreshTokenExpiresAt ?? null,
         ...tokens,
       },
     });
