@@ -24,8 +24,21 @@ export type TEmailSummary = {
   receivedAt: Date;
 };
 
+export type TEmailAnalysis = {
+  category: string;
+  priority: string;
+  requiresReply: boolean;
+  intent: string;
+  summary: string;
+  actionItems: string[];
+  deadlines: string[];
+  suggestedTone: string;
+  replyDraft: string | null;
+};
+
 export type TEmailDetail = TEmailSummary & {
   recipients: string[];
   body: string;
   html: string | null;
+  emailAnalysis: TEmailAnalysis | null;
 };

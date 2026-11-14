@@ -1,6 +1,12 @@
-import { emailListQuerySchema, EmailSyncType } from "@repo/schemas";
+import {
+  emailAnalyzeSchema,
+  emailListQuerySchema,
+  EmailAnalyzeType,
+  EmailSyncType,
+} from "@repo/schemas";
 import { Request, Response } from "express";
 import { okResponse } from "../../lib/http";
+import { emailAnalysisService } from "./email-analysis.service";
 import { emailService } from "./email.service";
 
 export const emailController = {
@@ -10,6 +16,7 @@ export const emailController = {
 
     okResponse(res, data, "Emails fetched successfully");
   },
+
   getEmail: async (
     req: Request<{ id: string }>,
     res: Response,
@@ -18,11 +25,25 @@ export const emailController = {
 
     okResponse(res, data, "Email fetched successfully");
   },
+
   syncEmails: async (
     req: Request<unknown, unknown, EmailSyncType>,
     res: Response,
   ): Promise<void> => {
     const data = await emailService.sync(req.user.id, req.body);
+
     okResponse(res, data, "Emails synced successfully");
+  },
+
+  analyzeEmails: async (
+    req: Request<unknown, unknown, EmailAnalyzeType>,
+    res: Response,
+  ): Promise<void> => {
+    const data = await emailAnalysisService.enqueuePending(
+      req.user.id,
+      req.body,
+    );
+
+    okResponse(res, data, "Emails queued for analysis");
   },
 };

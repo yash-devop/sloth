@@ -1,11 +1,8 @@
 import { prisma } from "@repo/db";
 import { EmailListQueryType, EmailSyncType } from "@repo/schemas";
-import {
-  syncGmailMessages,
-  SyncGmailResult,
-} from "../../lib/google-gmail/sync";
 import { AppError } from "../../middlewares/error.middleware";
 import { TEmailDetail, TEmailSummary } from "../../types/email.type";
+import { emailSyncService } from "./email-sync.service";
 
 export const emailService = {
   list: async (
@@ -49,6 +46,7 @@ export const emailService = {
         labels: true,
         status: true,
         receivedAt: true,
+        emailAnalysis: true,
       },
     });
 
@@ -59,9 +57,6 @@ export const emailService = {
     return email;
   },
 
-  sync: async (
-    userId: string,
-    { gmailAccountId, query, maxResults }: EmailSyncType,
-  ): Promise<SyncGmailResult> =>
-    syncGmailMessages(userId, { gmailAccountId, query, maxResults }),
+  sync: async (userId: string, input: EmailSyncType) =>
+    emailSyncService.syncNow(userId, input),
 };

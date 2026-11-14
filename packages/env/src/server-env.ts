@@ -21,6 +21,7 @@ const serverEnvSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_API_KEY: z.string().min(1),
   GEMINI_MODEL: z.string().min(1).default("gemini-3.5-flash-lite"),
+  REDIS_URL: z.string().min(1).default("redis://localhost:6379"),
   // GITHUB_CLIENT_ID: z.string().min(1),
   // GITHUB_API_KEY: z.stringx().min(1),
 });

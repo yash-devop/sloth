@@ -1,4 +1,4 @@
-import { emailSyncSchema } from "@repo/schemas";
+import { emailAnalyzeSchema, emailSyncSchema } from "@repo/schemas";
 import { Router } from "express";
 import { validateBodyMiddleware } from "../../middlewares/validate.middleware";
 import { emailController } from "./email.controller";
@@ -11,4 +11,9 @@ emailRouter.post(
   "/emails/sync",
   validateBodyMiddleware(emailSyncSchema),
   emailController.syncEmails,
+);
+emailRouter.post(
+  "/emails/analyze",
+  validateBodyMiddleware(emailAnalyzeSchema),
+  emailController.analyzeEmails,
 );

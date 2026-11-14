@@ -136,22 +136,3 @@ export const syncGmailMessages = async (
 
   return { fetched: messageIds.length, saved, failed };
 };
-
-const initialSyncs = new Set<string>();
-
-export const startInitialSync = (
-  userId: string,
-  gmailAccountId: string,
-): void => {
-  if (initialSyncs.has(gmailAccountId)) return;
-
-  initialSyncs.add(gmailAccountId);
-
-  void syncGmailMessages(userId, { gmailAccountId })
-    .catch((error: unknown) => {
-      console.error("Initial Gmail sync failed", error);
-    })
-    .finally(() => {
-      initialSyncs.delete(gmailAccountId);
-    });
-};

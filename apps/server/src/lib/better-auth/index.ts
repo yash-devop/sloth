@@ -3,7 +3,7 @@ import { serverEnv } from "@repo/env/server-env";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { allowedOrigins } from "../cors";
-import { startInitialSync } from "../google-gmail/sync";
+import { emailSyncService } from "../../modules/email/email-sync.service";
 import { sendEmail } from "../nodemailer";
 import { EMAIL_EXPIRES_IN } from "../nodemailer";
 import {
@@ -66,7 +66,7 @@ async function syncGmailAccount(account: GmailSyncAccount) {
     });
 
     if (!gmailAccount.lastEmailSyncAt) {
-      startInitialSync(account.userId, gmailAccount.id);
+      emailSyncService.startInitial(account.userId, gmailAccount.id);
     }
   } catch (error) {
     // Never block the auth flow if mailbox provisioning fails.

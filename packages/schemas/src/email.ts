@@ -23,3 +23,10 @@ export const emailSyncSchema = z.object({
 });
 
 export type EmailSyncType = z.infer<typeof emailSyncSchema>;
+
+export const emailAnalyzeSchema = z.object({
+  gmailAccountId: z.string().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
+export type EmailAnalyzeType = z.infer<typeof emailAnalyzeSchema>;
