@@ -3,9 +3,12 @@ import { serverEnv } from "@repo/env/server-env";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { allowedOrigins } from "../cors";
-import { sendEmail } from "../mail";
-import { EMAIL_EXPIRES_IN } from "../mail/";
-import { verificationEmail, withFrontendCallback } from "../mail/template";
+import { sendEmail } from "../nodemailer";
+import { EMAIL_EXPIRES_IN } from "../nodemailer";
+import {
+  verificationEmail,
+  withFrontendCallback,
+} from "../nodemailer/template";
 
 type GmailSyncAccount = {
   providerId: string;
