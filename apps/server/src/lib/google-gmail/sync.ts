@@ -1,4 +1,6 @@
 import { prisma } from "@repo/db";
+import { AppError } from "../../middlewares/error.middleware";
+import { isInvalidGrant, markAccountDisconnected } from "./errors";
 import { gmailConnect } from "./gmail-connect";
 import { parseGmailMessage } from "./parse-gmail-message";
 
@@ -29,22 +31,35 @@ export const syncGmailMessages = async (
   const messageIds: string[] = [];
   let pageToken: string | undefined;
 
-  do {
-    const list = await gmailClient.users.messages.list({
-      userId: "me",
-      q: query,
-      maxResults,
-      pageToken,
-    });
+  try {
+    do {
+      const list = await gmailClient.users.messages.list({
+        userId: "me",
+        q: query,
+        maxResults,
+        pageToken,
+      });
 
-    for (const message of list.data.messages ?? []) {
-      if (message.id && messageIds.length < maxResults) {
-        messageIds.push(message.id);
+      for (const message of list.data.messages ?? []) {
+        if (message.id && messageIds.length < maxResults) {
+          messageIds.push(message.id);
+        }
       }
+
+      pageToken = list.data.nextPageToken ?? undefined;
+    } while (pageToken && messageIds.length < maxResults);
+  } catch (error) {
+    if (isInvalidGrant(error)) {
+      await markAccountDisconnected(account.id, "invalid_grant");
+      throw new AppError(
+        "Gmail access was revoked. Reconnect this account.",
+        409,
+        "CONFLICT",
+      );
     }
 
-    pageToken = list.data.nextPageToken ?? undefined;
-  } while (pageToken && messageIds.length < maxResults);
+    throw error;
+  }
 
   let saved = 0;
   let failed = 0;
@@ -100,6 +115,15 @@ export const syncGmailMessages = async (
 
       saved += 1;
     } catch (error) {
+      if (isInvalidGrant(error)) {
+        await markAccountDisconnected(account.id, "invalid_grant");
+        throw new AppError(
+          "Gmail access was revoked. Reconnect this account.",
+          409,
+          "CONFLICT",
+        );
+      }
+
       failed += 1;
       console.error(`Failed to sync Gmail message ${id}`, error);
     }
