@@ -1,7 +1,12 @@
+enum GmailAccountStatus {
+  CONNECTED
+  DISCONNECTED
+}
+
 model GmailAccount {
-  id                    String    @id @default(cuid())
+  id                    String             @id @default(cuid())
   userId                String
-  googleAccountId       String    @unique
+  googleAccountId       String             @unique
   email                 String
   accessToken           String?
   refreshToken          String?
@@ -10,8 +15,11 @@ model GmailAccount {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   lastEmailSyncAt       DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  status                GmailAccountStatus @default(CONNECTED)
+  disconnectedAt        DateTime?
+  lastError             String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
 
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   emails    Email[]
