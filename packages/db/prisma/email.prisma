@@ -1,11 +1,25 @@
+enum EmailStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model Email {
-  id             String   @id @default(cuid())
-  gmailMessageId String?
+  id             String      @id @default(cuid())
+  gmailMessageId String
+  threadId       String?
   sender         String
+  recipients     String[]    @default([])
   subject        String
-  body           String   @db.Text
+  body           String      @db.Text
+  html           String?     @db.Text
+  snippet        String?
+  labels         String[]    @default([])
+  status         EmailStatus @default(PENDING)
   receivedAt     DateTime
-  createdAt      DateTime @default(now())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @default(now()) @updatedAt
 
   userId         String
   gmailAccountId String
@@ -13,8 +27,10 @@ model Email {
   gmailAccount   GmailAccount   @relation(fields: [gmailAccountId], references: [id], onDelete: Cascade)
   emailAnalysis  EmailAnalysis?
 
-  @@unique([userId, gmailMessageId])
+  @@unique([gmailAccountId, gmailMessageId])
   @@index([userId, receivedAt])
+  @@index([gmailAccountId, receivedAt])
+  @@index([gmailAccountId, threadId])
   @@map("email")
 }
 
