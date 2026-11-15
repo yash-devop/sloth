@@ -1,7 +1,15 @@
 import { prisma } from "@repo/db";
-import { EmailListQueryType, EmailSyncType } from "@repo/schemas";
+import {
+  EmailInboxSummaryQueryType,
+  EmailListQueryType,
+  EmailSyncType,
+} from "@repo/schemas";
 import { AppError } from "../../middlewares/error.middleware";
-import { TEmailDetail, TEmailSummary } from "../../types/email.type";
+import {
+  TEmailDetail,
+  TEmailSummary,
+  TInboxSummary,
+} from "../../types/email.type";
 import { emailSyncService } from "./email-sync.service";
 
 export const emailService = {
@@ -95,6 +103,67 @@ export const emailService = {
     return email;
   },
 
-  sync: async (userId: string, input: EmailSyncType) =>
-    emailSyncService.syncNow(userId, input),
+  sync: async (userId: string, input: EmailSyncType) => {
+    return emailSyncService.syncNow(userId, input);
+  },
+
+  summary: async (
+    userId: string,
+    { gmailAccountId }: EmailInboxSummaryQueryType,
+  ): Promise<TInboxSummary> => {
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const [newCount, importantCount, needsReplyCount, withDeadlinesCount] =
+      await Promise.all([
+        prisma.email.count({
+          where: {
+            userId,
+            gmailAccountId,
+            receivedAt: {
+              gte: last24Hours,
+            },
+          },
+        }),
+        prisma.email.count({
+          where: {
+            userId,
+            gmailAccountId,
+            emailAnalysis: {
+              priority: {
+                in: ["HIGH", "URGENT"],
+              },
+            },
+          },
+        }),
+        prisma.email.count({
+          where: {
+            userId,
+            gmailAccountId,
+            emailAnalysis: {
+              requiresReply: {
+                equals: true,
+              },
+            },
+          },
+        }),
+        prisma.email.count({
+          where: {
+            userId,
+            gmailAccountId,
+            emailAnalysis: {
+              deadlines: {
+                isEmpty: false,
+              },
+            },
+          },
+        }),
+      ]);
+
+    return {
+      new: newCount,
+      important: importantCount,
+      needsReply: needsReplyCount,
+      withDeadlines: withDeadlinesCount,
+    };
+  },
 };

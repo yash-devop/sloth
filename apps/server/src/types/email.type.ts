@@ -45,6 +45,13 @@ export type TEmailAnalysis = {
   replyDraft: string | null;
 };
 
+export type TInboxSummary = {
+  new: number;
+  important: number;
+  needsReply: number;
+  withDeadlines: number;
+};
+
 export type TEmailDetail = Omit<TEmailSummary, "emailAnalysis"> & {
   recipients: string[];
   body: string;

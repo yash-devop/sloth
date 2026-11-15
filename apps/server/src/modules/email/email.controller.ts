@@ -1,10 +1,9 @@
 import {
-  emailAnalyzeSchema,
-  emailListQuerySchema,
   EmailAnalyzeType,
-  EmailSyncType,
   EmailIdType,
+  EmailInboxSummaryQueryType,
   EmailListQueryType,
+  EmailSyncType,
 } from "@repo/schemas";
 import { Request, Response } from "express";
 import { okResponse } from "../../lib/http";
@@ -49,5 +48,14 @@ export const emailController = {
     );
 
     okResponse(res, data, "Emails queued for analysis");
+  },
+
+  summary: async (
+    req: Request<unknown, unknown, unknown, EmailInboxSummaryQueryType>,
+    res: Response,
+  ) => {
+    const data = await emailService.summary(req.user.id, req.query);
+
+    okResponse(res, data, "Counted successfully");
   },
 };

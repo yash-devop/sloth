@@ -1,6 +1,7 @@
 import {
   emailAnalyzeSchema,
   emailIdSchema,
+  emailInboxSummaryQuerySchema,
   emailListQuerySchema,
   emailSyncSchema,
 } from "@repo/schemas";
@@ -19,11 +20,7 @@ emailRouter.get(
   validateQueryMiddleware(emailListQuerySchema),
   emailController.getEmails,
 );
-emailRouter.get(
-  "/emails/:id",
-  validateParamsMiddleware(emailIdSchema),
-  emailController.getEmail,
-);
+
 emailRouter.post(
   "/emails/sync",
   validateBodyMiddleware(emailSyncSchema),
@@ -33,4 +30,14 @@ emailRouter.post(
   "/emails/analyze",
   validateBodyMiddleware(emailAnalyzeSchema),
   emailController.analyzeEmails,
+);
+emailRouter.get(
+  "/inbox/summary",
+  validateQueryMiddleware(emailInboxSummaryQuerySchema),
+  emailController.summary,
+);
+emailRouter.get(
+  "/emails/:id",
+  validateParamsMiddleware(emailIdSchema),
+  emailController.getEmail,
 );
