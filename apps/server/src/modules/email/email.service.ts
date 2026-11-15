@@ -7,13 +7,42 @@ import { emailSyncService } from "./email-sync.service";
 export const emailService = {
   list: async (
     userId: string,
-    { gmailAccountId, limit }: EmailListQueryType,
+    {
+      gmailAccountId,
+      limit,
+      category,
+      priority,
+      q,
+      requiresReply,
+      status,
+    }: EmailListQueryType,
   ): Promise<TEmailSummary[]> => {
+    const analysisWhere = {
+      ...(category ? { category } : {}),
+      ...(priority ? { priority } : {}),
+      ...(requiresReply !== undefined ? { requiresReply } : {}),
+    };
+
+    const where = {
+      userId,
+      ...(gmailAccountId ? { gmailAccountId } : {}),
+      ...(status ? { status } : {}),
+      ...(q
+        ? {
+            OR: [
+              { subject: { contains: q, mode: "insensitive" as const } },
+              { sender: { contains: q, mode: "insensitive" as const } },
+              { snippet: { contains: q, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+      ...(Object.keys(analysisWhere).length > 0
+        ? { emailAnalysis: { is: analysisWhere } }
+        : {}),
+    };
+
     const emails = await prisma.email.findMany({
-      where: {
-        userId,
-        ...(gmailAccountId ? { gmailAccountId } : {}),
-      },
+      where,
       orderBy: { receivedAt: "desc" },
       take: limit,
       select: {
@@ -25,6 +54,15 @@ export const emailService = {
         labels: true,
         status: true,
         receivedAt: true,
+        emailAnalysis: {
+          select: {
+            category: true,
+            priority: true,
+            requiresReply: true,
+            summary: true,
+            deadlines: true,
+          },
+        },
       },
     });
 

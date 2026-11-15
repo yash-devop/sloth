@@ -13,6 +13,14 @@ export type TEmailMessage = {
   labels: string[];
 };
 
+export type TEmailListAnalysis = {
+  category: string;
+  priority: string;
+  requiresReply: boolean;
+  summary: string;
+  deadlines: string[];
+};
+
 export type TEmailSummary = {
   id: string;
   threadId: string | null;
@@ -22,6 +30,7 @@ export type TEmailSummary = {
   labels: string[];
   status: Prisma.Email["status"];
   receivedAt: Date;
+  emailAnalysis: TEmailListAnalysis | null;
 };
 
 export type TEmailAnalysis = {
@@ -36,7 +45,7 @@ export type TEmailAnalysis = {
   replyDraft: string | null;
 };
 
-export type TEmailDetail = TEmailSummary & {
+export type TEmailDetail = Omit<TEmailSummary, "emailAnalysis"> & {
   recipients: string[];
   body: string;
   html: string | null;
