@@ -73,15 +73,15 @@ pnpm exec turbo run <task> --filter=web
   - `@/components/email-list`
   - `@/hooks/use-triage-queue`
   - `@/lib/api-client`
-- `@repo/ui` exports `./*` → `src/*.tsx`, so import `@repo/ui/button`.
+- `@repo/ui` exports each shadcn component by name (e.g. `./button`) plus `./globals.css`; import components as `@repo/ui/button`.
 - Any new alias must start with `@`, be declared in the relevant `tsconfig.json` `paths` (plus Next config if needed) before first use, and stay consistent across apps.
 
 ## UI components
 
 - Always use components from `@repo/ui` before writing new ones.
-- If a component is missing, add the shadcn/ui (base-ui based) implementation under `packages/ui/src/` and export it from the package so apps import it as `@repo/ui/<kebab-name>`.
+- If a component is missing, run `pnpm dlx shadcn@latest add <name>` from `packages/ui` (config: `base-nova`, Base UI primitives); the CLI adds `src/components/<name>/` and updates `package.json` exports, then apps import it as `@repo/ui/<kebab-name>`.
 - If it still isn't available, ask the user instead of inventing a one-off component.
-- Use one icon library consistently; do not add a new icon, animation, or UI library without asking.
+- Use @tabler/icons-react icons consistently; do not add a new icon, animation, or UI library without asking.
 
 ## Data fetching & errors
 
