@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { linkSocial, signIn, signOut, useSession } from "@/lib/auth-client";
-
+import { Button } from "@repo/ui/button";
 const CALLBACK_URL = "http://localhost:3000/auth-test";
 
 const GMAIL_SCOPES = [
@@ -24,7 +24,7 @@ function AuthTestContent() {
   const error = useSearchParams().get("error");
 
   return (
-    <div style={{ padding: 24, fontFamily: "system-ui, sans-serif" }}>
+    <div className="p-6">
       <h1>Better Auth test</h1>
 
       {isPending ? <p>Loading session...</p> : null}
@@ -37,7 +37,7 @@ function AuthTestContent() {
         <>
           <p>Signed in as {session.user.email}</p>
 
-          <button
+          <Button
             onClick={() =>
               linkSocial({
                 provider: "google",
@@ -48,21 +48,62 @@ function AuthTestContent() {
             }
           >
             Connect Gmail
-          </button>
+          </Button>
 
-          <button onClick={() => signOut()}>Sign out</button>
+          <Button onClick={() => signOut()}>Sign out</Button>
         </>
       ) : (
-        <button
-          onClick={() =>
-            signIn.social({
-              provider: "google",
-              callbackURL: CALLBACK_URL,
-            })
-          }
-        >
-          Sign in with Google
-        </button>
+        <div className="space-x-3">
+          <Button
+            variant={"default"}
+            size={"xs"}
+            onClick={() =>
+              signIn.social({
+                provider: "google",
+                callbackURL: CALLBACK_URL,
+              })
+            }
+          >
+            Sign in with Google
+          </Button>
+
+          <Button
+            variant={"default"}
+            size={"sm"}
+            onClick={() =>
+              signIn.social({
+                provider: "google",
+                callbackURL: CALLBACK_URL,
+              })
+            }
+          >
+            Sign in with Google
+          </Button>
+          <Button
+            variant={"default"}
+            size={"default"}
+            onClick={() =>
+              signIn.social({
+                provider: "google",
+                callbackURL: CALLBACK_URL,
+              })
+            }
+          >
+            Sign in with Google
+          </Button>
+          <Button
+            variant={"default"}
+            size={"lg"}
+            onClick={() =>
+              signIn.social({
+                provider: "google",
+                callbackURL: CALLBACK_URL,
+              })
+            }
+          >
+            Sign in with Google
+          </Button>
+        </div>
       )}
     </div>
   );
