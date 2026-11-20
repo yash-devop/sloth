@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { linkSocial, signIn, signOut, useSession } from "@/lib/auth-client";
 import { Button } from "@repo/ui/button";
+import { IconMail } from "@tabler/icons-react";
 const CALLBACK_URL = "http://localhost:3000/auth-test";
 
 const GMAIL_SCOPES = [
@@ -77,6 +78,8 @@ function AuthTestContent() {
               })
             }
           >
+            {" "}
+            <IconMail />
             Sign in with Google
           </Button>
           <Button
