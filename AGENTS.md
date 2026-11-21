@@ -73,13 +73,19 @@ pnpm exec turbo run <task> --filter=web
   - `@/components/email-list`
   - `@/hooks/use-triage-queue`
   - `@/lib/api-client`
-- `@repo/ui` exports each shadcn component by name (e.g. `./button`) plus `./globals.css`; import components as `@repo/ui/button`.
+- `@repo/ui` exports `"."`, each component by name (e.g. `./button`), and `./globals.css`; import components as `@repo/ui/button`.
+- Do not export the `lib` or `hooks` folders from `package.json`; they are internal. Co-locate hooks with the component that uses them and import via `./sibling`.
 - Any new alias must start with `@`, be declared in the relevant `tsconfig.json` `paths` (plus Next config if needed) before first use, and stay consistent across apps.
 
 ## UI components
 
 - Always use components from `@repo/ui` before writing new ones.
-- If a component is missing, run `pnpm dlx shadcn@latest add <name>` from `packages/ui` (config: `base-nova`, Base UI primitives); the CLI adds `src/components/<name>/` and updates `package.json` exports, then apps import it as `@repo/ui/<kebab-name>`.
+- If a component is missing, run `pnpm dlx shadcn@latest add <name>` from `packages/ui` (config: `base-nova`, Base UI primitives).
+- Required structure after adding a component:
+  - Each component lives in its own folder: `packages/ui/src/components/<name>/` with `<name>.tsx` and an `index.ts` barrel (`export * from "./<name>";`).
+  - The root barrel `packages/ui/src/components/index.ts` re-exports every component.
+  - `packages/ui/package.json` exports `.` as `./src/components/index.ts`, plus one entry per component: `"./<name>": "./src/components/<name>/index.ts"`.
+  - Apps import components as `@repo/ui/<kebab-name>`.
 - If it still isn't available, ask the user instead of inventing a one-off component.
 - Use @tabler/icons-react icons consistently; do not add a new icon, animation, or UI library without asking.
 
