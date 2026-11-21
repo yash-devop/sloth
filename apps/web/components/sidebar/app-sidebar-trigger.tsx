@@ -1,6 +1,6 @@
 "use client";
 import { SidebarTrigger, useSidebar } from "@repo/ui";
-
+import { SmoothSlideMotion } from "@repo/ui/motion";
 type AppSidebarTriggerProps = {
   when?: "expanded" | "collapsed";
 };
@@ -8,11 +8,19 @@ type AppSidebarTriggerProps = {
 export const AppSidebarTrigger = ({
   when = "expanded",
 }: AppSidebarTriggerProps) => {
-  const { open, isMobile } = useSidebar();
+  const { open, openMobile, isMobile } = useSidebar();
 
   if (when === "expanded") {
-    return open && !isMobile ? <SidebarTrigger /> : null;
+    return (
+      <SmoothSlideMotion show={isMobile ? openMobile : open}>
+        <SidebarTrigger />
+      </SmoothSlideMotion>
+    );
   }
 
-  return !open || isMobile ? <SidebarTrigger /> : null;
+  return (
+    <SmoothSlideMotion show={isMobile ? !openMobile : !open}>
+      <SidebarTrigger />
+    </SmoothSlideMotion>
+  );
 };

@@ -10,13 +10,12 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-full">
-        <div className="h-14 border-b w-full">
+      <div className="w-full">
+        <div className="h-12 border-b w-full flex items-center px-4">
           <AppSidebarTrigger when="collapsed" />
         </div>
-
-        {children}
-      </main>
+        <main className="p-4">{children}</main>
+      </div>
     </SidebarProvider>
   );
 }
