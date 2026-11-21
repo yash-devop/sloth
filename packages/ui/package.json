@@ -6,6 +6,8 @@
   "exports": {
     ".": "./src/components/index.ts",
     "./globals.css": "./src/styles/globals.css",
+    "./motion": "./src/motion/index.ts",
+    "./motionVariants": "./src/lib/motion/index.ts",
     "./avatar": "./src/components/avatar/index.ts",
     "./button": "./src/components/button/index.ts",
     "./dropdown-menu": "./src/components/dropdown-menu/index.ts",
@@ -39,6 +41,7 @@
     "@tabler/icons-react": "^3.52.0",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
+    "motion": "^14.14.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   }
