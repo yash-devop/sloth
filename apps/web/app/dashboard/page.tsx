@@ -1,3 +1,3 @@
-export default function DashboardPage() {
-  return <div>PAGGEGEGE</div>;
+export default function InboxPage() {
+  return <h1>Inbox</h1>;
 }
