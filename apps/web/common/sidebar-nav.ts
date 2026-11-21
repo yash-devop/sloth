@@ -13,25 +13,37 @@ export type SidebarNavItem = {
   icon: Icon;
 };
 
-export const workspaceNavItems: SidebarNavItem[] = [
-  { title: "Inbox", href: "/dashboard", icon: IconMail },
-  { title: "Priority", href: "/dashboard/priority", icon: IconBadges },
-  {
-    title: "Inbox zero",
-    href: "/dashboard/inbox-zero",
-    icon: IconNoiseReduction,
-  },
-  {
-    title: "Tasks & Follow up",
-    href: "/dashboard/tasks",
-    icon: IconBrandAsana,
-  },
-];
+export type SidebarNavGroup = {
+  label: string;
+  items: SidebarNavItem[];
+};
 
-export const commandCenterNavItems: SidebarNavItem[] = [
+export const sidebarNavGroups: SidebarNavGroup[] = [
   {
-    title: "Agent Action Center",
-    href: "/dashboard/agent-action-center",
-    icon: IconCrosshair,
+    label: "Workspace",
+    items: [
+      { title: "Inbox", href: "/dashboard", icon: IconMail },
+      { title: "Priority", href: "/dashboard/priority", icon: IconBadges },
+      {
+        title: "Inbox zero",
+        href: "/dashboard/inbox-zero",
+        icon: IconNoiseReduction,
+      },
+      {
+        title: "Tasks & Follow up",
+        href: "/dashboard/tasks",
+        icon: IconBrandAsana,
+      },
+    ],
+  },
+  {
+    label: "Command center",
+    items: [
+      {
+        title: "Agent Action Center",
+        href: "/dashboard/agent-action-center",
+        icon: IconCrosshair,
+      },
+    ],
   },
 ];
