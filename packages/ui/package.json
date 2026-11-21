@@ -4,9 +4,17 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./globals.css": "./src/styles/globals.css",
     ".": "./src/components/index.ts",
-    "./button": "./src/components/button/index.ts"
+    "./globals.css": "./src/styles/globals.css",
+    "./avatar": "./src/components/avatar/index.ts",
+    "./button": "./src/components/button/index.ts",
+    "./dropdown-menu": "./src/components/dropdown-menu/index.ts",
+    "./input": "./src/components/input/index.ts",
+    "./separator": "./src/components/separator/index.ts",
+    "./sheet": "./src/components/sheet/index.ts",
+    "./sidebar": "./src/components/sidebar/index.ts",
+    "./skeleton": "./src/components/skeleton/index.ts",
+    "./tooltip": "./src/components/tooltip/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
