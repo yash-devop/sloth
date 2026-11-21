@@ -83,8 +83,8 @@ function AuthTestContent() {
             Sign in with Google
           </Button>
           <Button
-            variant={"default"}
-            size={"default"}
+            variant={"secondary"}
+            size={"sm"}
             onClick={() =>
               signIn.social({
                 provider: "google",
