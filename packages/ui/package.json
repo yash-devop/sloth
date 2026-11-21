@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/components/index.ts",
     "./globals.css": "./src/styles/globals.css",
+    "./cn": "./src/lib/utils.ts",
     "./motion": "./src/motion/index.ts",
     "./motionVariants": "./src/lib/motion/index.ts",
     "./avatar": "./src/components/avatar/index.ts",
