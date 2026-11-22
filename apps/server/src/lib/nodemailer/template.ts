@@ -11,7 +11,7 @@ export const withFrontendCallback = (url: string): string => {
   const parsed = new URL(url);
   parsed.searchParams.set(
     "callbackURL",
-    `${serverEnv.NEXT_PUBLIC_FRONTEND_URL}/dashboard`,
+    `${serverEnv.NEXT_PUBLIC_FRONTEND_URL}/inbox`,
   );
   return parsed.toString();
 };

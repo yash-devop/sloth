@@ -20,7 +20,7 @@ import { sidebarNavGroups } from "@/common/sidebar-nav";
 import { AppSidebarHeader } from "./app-sidebar-header";
 
 const isActivePath = (pathname: string, href: string) =>
-  href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+  href === "/inbox" ? pathname === href : pathname.startsWith(href);
 
 export const AppSidebar = () => {
   const pathname = usePathname();

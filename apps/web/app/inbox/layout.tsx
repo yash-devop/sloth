@@ -2,7 +2,7 @@ import { AppSidebar, AppSidebarTrigger } from "@/components/sidebar";
 import { SidebarProvider } from "@repo/ui/sidebar";
 import React from "react";
 
-export default function DashboardLayout({
+export default function InboxLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -22,16 +22,16 @@ export const sidebarNavGroups: SidebarNavGroup[] = [
   {
     label: "Workspace",
     items: [
-      { title: "Inbox", href: "/dashboard", icon: IconMail },
-      { title: "Priority", href: "/dashboard/priority", icon: IconBadges },
+      { title: "Inbox", href: "/inbox", icon: IconMail },
+      { title: "Priority", href: "/inbox/priority", icon: IconBadges },
       {
         title: "Inbox zero",
-        href: "/dashboard/inbox-zero",
+        href: "/inbox/inbox-zero",
         icon: IconNoiseReduction,
       },
       {
         title: "Tasks & Follow up",
-        href: "/dashboard/tasks",
+        href: "/inbox/tasks",
         icon: IconBrandAsana,
       },
     ],
@@ -41,7 +41,7 @@ export const sidebarNavGroups: SidebarNavGroup[] = [
     items: [
       {
         title: "Agent Action Center",
-        href: "/dashboard/agent-action-center",
+        href: "/inbox/agent-action-center",
         icon: IconCrosshair,
       },
     ],
