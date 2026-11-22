@@ -4,6 +4,7 @@ import {
   IconCrosshair,
   IconMail,
   IconNoiseReduction,
+  IconToggleLeft,
   type Icon,
 } from "@tabler/icons-react";
 
@@ -30,7 +31,7 @@ export const sidebarNavGroups: SidebarNavGroup[] = [
         icon: IconNoiseReduction,
       },
       {
-        title: "Tasks & Follow up",
+        title: "Tasks",
         href: "/inbox/tasks",
         icon: IconBrandAsana,
       },
@@ -43,6 +44,16 @@ export const sidebarNavGroups: SidebarNavGroup[] = [
         title: "Agent Action Center",
         href: "/inbox/agent-action-center",
         icon: IconCrosshair,
+      },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      {
+        title: "Settings",
+        href: "/inbox/settings",
+        icon: IconToggleLeft,
       },
     ],
   },

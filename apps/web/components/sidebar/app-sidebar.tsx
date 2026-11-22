@@ -18,6 +18,12 @@ import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { sidebarNavGroups } from "@/common/sidebar-nav";
 import { AppSidebarHeader } from "./app-sidebar-header";
+import { Button } from "@repo/ui";
+import {
+  IconChevronCompactLeft,
+  IconChevronLeft,
+  IconSunFilled,
+} from "@tabler/icons-react";
 
 const isActivePath = (pathname: string, href: string) =>
   href === "/inbox" ? pathname === href : pathname.startsWith(href);
@@ -28,7 +34,7 @@ export const AppSidebar = () => {
   return (
     <Sidebar variant="sidebar">
       <AppSidebarHeader />
-      <SidebarContent className="mt-1.5 px-0 mx-0">
+      <SidebarContent className="mt-1.5 px-0 mx-0 gap-1">
         {sidebarNavGroups.map((group, index) => (
           <Fragment key={group.label}>
             {index > 0 && <SidebarSeparator className="mx-0 w-full" />}
@@ -64,7 +70,26 @@ export const AppSidebar = () => {
           </Fragment>
         ))}
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter className="border-t flex flex-row items-center justify-between">
+        <Button
+          variant={"ghost"}
+          className={
+            "w-fit text-secondary-foreground cursor-pointer has-[svg]:gap-1 text-[13px]"
+          }
+        >
+          <IconChevronLeft className="mt-px" />
+          <span>Sign out</span>
+        </Button>
+        <Button
+          variant={"outline"}
+          className={
+            "rounded-sm h-7 px-2 pl-1.5 w-fit text-secondary-foreground cursor-pointer has-[svg]:gap-1 text-[13px]"
+          }
+        >
+          <IconSunFilled className="mt-px" />
+          <span>Light</span>
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 };
