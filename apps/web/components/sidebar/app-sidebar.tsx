@@ -73,7 +73,7 @@ export const AppSidebar = () => {
         <Button
           variant={"ghost"}
           className={
-            "w-fit text-secondary-foreground cursor-pointer has-[svg]:gap-1 text-[13px]"
+            "w-fit text-secondary-foreground cursor-pointer has-[svg]:gap-1 text-[13px] pl-1"
           }
         >
           <IconChevronLeft className="mt-px" />
